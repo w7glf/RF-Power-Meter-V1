@@ -8,7 +8,7 @@ import tkinter as tk
 import tkinter.font as tkFont
 import pywsjtx.extra.simple_server
 
-# pyRFPowerMeter  Version 1.0  April 27 2020
+# pyRFPowerMeter  Version 1.0 - April 27 2020
 # Author: M. Lewis K7MDL
 # 
 #   Uses the awesome WSJT-X python decoding package pyWSJTX 
