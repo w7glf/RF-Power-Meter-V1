@@ -107,7 +107,7 @@ UDP_PORT = 2334             # change to match your WSJT-X source of data port nu
 #               wsjtx_id = the_packet.wsjtx_id
 
 # Global Vars
-global s            # used to get nmetwork packet data
+global s            # used to get network packet data
 last_freq = ""      # used for detecting band changes from network
 # This boolean variable will save the communications (comms) status
 comms = None   #  False is off.  App.comm wil then toggle to on state.
