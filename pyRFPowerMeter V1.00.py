@@ -8,7 +8,7 @@ import tkinter as tk
 import tkinter.font as tkFont
 import pywsjtx.extra.simple_server
 
-# pyRFPowerMeter  Version 1.0 - April 27 2020
+# pyRFPowerMeter  Version 1.0 April 27 2020
 # Author: M. Lewis K7MDL
 # 
 #   Uses the awesome WSJT-X python decoding package pyWSJTX 
@@ -30,16 +30,16 @@ import pywsjtx.extra.simple_server
 #       Specify the port name on the command line and it will start up without user interaction
 #  *********************************************************************************************************
 
-# This app is the companion application to the Arduino based RF power meter poject by K7MDL
+# This app is the companion application to the Arduino based RF power meter project by K7MDL
 #   It has no usage without one or more of the Arduino meters.  This app listens to a serial port and 
 #   displays the results in a small fixed size GUI window.  
 #   It also sends commands to the meter such as to change calibration sets when you change frequency
 #   You could emulate the same simple data format of 8 string fields and use this for your own device
-#   The deafult serial rate (found at bottom of code below) is 115200 to match the default in my Arduino meter code
+#   The default serial rate (found at bottom of code below) is 115200 to match the default in my Arduino meter code
 
-# This app accepts 1 command line argument --  The serial port to use.  It will prompt for one if not supplied in a text command window
-# In normal usage you would specify the com port to be used on the command line in a desktop shortcut or a batch file.  
-# Yo could also specify the "port_name" in the code at the bottom of this script
+# This app accepts 1 command line argument --  The serial port to use.  It will prompt for one if not supplied in a
+# text command window.  In normal usage you would specify the com port to be used on the command line in a desktop
+# shortcut or a batch file.  You could also specify the "port_name" in the code at the bottom of this script
 
 # Change these 2 lines to suit your station
 myTitle = "K7MDL Remote Power Meter for VHF-UHF Bands"      # Windows Title Bar Text
@@ -66,21 +66,21 @@ myWSJTX_ID = "WSJT-X"      # "WSJT-X" default as of WSJT-X version V2.1.   Chang
 #UDP_IP = '224.1.1.1'       # multicast address and port alternative
 #UDP_PORT = 5007
 UDP_IP = "127.0.0.1"        # default local machine address
-UDP_PORT = 2334             # change to match your WSJTX source of data port number. 2237 is a common WSJTX default port.  See below for more info...
+UDP_PORT = 2334             # change to match your WSJT-X source of data port number. 2237 is a common WSJT-X default port.  See below for more info...
 # I am using 2334 with JTAlert re-broadcasting
 
 #  This program can optionally use WSJT-X UDP Reporting broadcasts to automatically track your radio's frequency and send a command
-#       to the Arduino RF Power meter to load the approriate calibration set.  10 bands are provided today.  50 is used for HF and 6M.  
-#       The remingin bands are all the VHF+ bands up to 10GHz by default  
+#       to the Arduino RF Power meter to load the appropriate calibration set.  10 bands are provided today.  50 is used for HF and 6M.
+#       The remaining bands are all the VHF+ bands up to 10GHz by default
 #       You can change the labels in the code for the button band names to be anything.  Can also change them in the Arduino side.
-#       The name is just a label, in the Arduino side is it used as a more friendly way to say BandX and represent a correspnding set of 
+#       The name is just a label, in the Arduino side is it used as a more friendly way to say BandX and represent a corresponding set of
 #           coupling factor + any attenuators + any cal correction factor for the detectors at a given frequency for 
 #           the forward and reflected ports of a particular dual direction coupler.  
-#       If you change couplers be sure to set new calibratiuon factors in the Arduino side as they are frequency sensitive as well as
+#       If you change couplers be sure to set new calibration factors in the Arduino side as they are frequency sensitive as well as
 #           could have different coupling factors such as 20dB or 30dB on each port.  
-#       Single port couplers can be uses the forward port to zero out the dBm fields when teh Forward port Watts is reported as 0W.  
+#       Single port couplers can be uses the forward port to zero out the dBm fields when the Forward port Watts is reported as 0W.
 #           The values will drift around on the unused port at other time and the SWR value may fluctuate.  Can edit these fields to blank if desired
-#       In a pinch you coudl adjsut the incoming data values here.
+#       In a pinch you could adjust the incoming data values here.
 #  WSJT uses 2237 to talk to JTAlert.  JTAlert can rebroadcast and uses 2334 by default.  
 #  These ports can be changed in each program
 #  Cannot open both this app and JTAlert on 2237 - bind conflict so set this app's port to 2334 to match the JTAlert
@@ -89,17 +89,17 @@ UDP_PORT = 2334             # change to match your WSJTX source of data port num
 #  Can also use multicast address with WSJT but not sure how other programs like JTAlert work with it
 
 #  If running multiple instances of WSJT-X (including on the same address for multicast usage)
-#      you neeed to use the WSJTX ID to map the instance messages to the correct power meter app ID field.
+#      you need to use the WSJT-X ID to map the instance messages to the correct power meter app ID field.
 #      Change the ID in the Arduino side code and set myRig__meter_ID above to match.  Must use a unique com port for each meter
 #  By default the code here has wsjtx_id set to None and will read any and all WSJT-X instance status messages received.  
 #      This will have the effect of constantly switching bands if the instances are reporting different frequency bands
-#      You can asign a bogus UDP port nnumber to shut off WSJT-X message reception or tailor the WSJT-ID value described next.
+#      You can assign a bogus UDP port number to shut off WSJT-X message reception or tailor the WSJT-ID value described next.
 #  
-#  Each instance of WSJT-X has an instance name set with -rigname.  This name wil be used as the WSJTX_ID in all network messages
-#  By default the this program is not filtering on this ID so wil lread any instance, including multiple instances which can get confusing
-#  Change the WSJT-X ID in this code from None to teh name that matches your rigname.  
-#  You can see the actual WSJTX ID received as it is dislayed in the terminal window each time a heartbeat is received
-#      This is a section of the relavent code used in this script
+#  Each instance of WSJT-X has an instance name set with -rigname.  This name will be used as the WSJTX_ID in all network messages
+#  By default the this program is not filtering on this ID so will read any instance, including multiple instances which can get confusing
+#  Change the WSJT-X ID in this code from None to the name that matches your rigname.
+#  You can see the actual WSJTX ID received as it is displayed in the terminal window each time a heartbeat is received
+#      This is a section of the relevant code used in this script
 #           if wsjtx_id is None and (type(the_packet) == pywsjtx.HeartBeatPacket):
 #               # We have an instance of WSJTX
 #               print("WSJT-X is detected, id is {}".format(the_packet.wsjtx_id))
@@ -114,7 +114,7 @@ comms = None   #  False is off.  App.comm wil then toggle to on state.
 send_meter_cmd_flag = False   # Boolean to gate Sreial thread to send cmd byte to meter.  Cmd comes from USB thread
 cmd_byte = b'0'
 meter_data = ["","","","","","","","","",""]
-meter_data_fl  = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,] # stores the same info in same psotion when possible as a float
+meter_data_fl  = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,] # stores the same info in same position when possible as a float
 
 def isfloat(x):
     # Check if the received 4 characters can be converted to a float
@@ -210,7 +210,7 @@ class Serial_RX(Thread):
                                 meter_data_fl[i] = float(meter_data[i])
                             else: # Not a float so zero fill the field
                                 meter_data_fl[i] = 0.0
-                        meter_data_fl[2] = float(meter_data[2][:-3])    # convert band label to a number.  Ideally would use a RegEx to split at teh end of the numbers
+                        meter_data_fl[2] = float(meter_data[2][:-3])    # convert band label to a number.  Ideally would use a RegEx to split at the end of the numbers
                         if meter_data_fl[5] == 0:
                             meter_data[3] = "0.0"          #  zero out the dBm values when F watts is zero
                             meter_data[4] = "0.0"
@@ -275,7 +275,7 @@ class Receiver(Thread):
             the_packet = pywsjtx.WSJTXPacketClassFactory.from_udp_packet(addr_port, pkt)
             print("Looking only for WSJT-X ID of : {}" .format(myWSJTX_ID))
             if wsjtx_id is None and (type(the_packet) == pywsjtx.HeartBeatPacket):                
-                # we have an instance of WSJTX
+                # we have an instance of WSJT-X
                 print("WSJT-X is detected, id is {}".format(the_packet.wsjtx_id))
                 print("--> HeartBeatPacket Received")
                 wsjtx_id = the_packet.wsjtx_id
@@ -299,7 +299,7 @@ class Receiver(Thread):
     def send_meter_cmd(self, cmd, direct_cmd):
         # cmd is type chr to be converted to byte
         # direct_cmd is BOOL to specify if it is a direct command such as button push for 144 
-        #    vs a UDP freqwuency which can vary in a range
+        #    vs a UDP frequency which can vary in a range
         # direct_cmd is True to do a direct command
 
         global send_meter_cmd_flag
@@ -564,7 +564,7 @@ class App(tk.Frame):
 
         self.meter_id_f.after(800, self.update_label)  # refresh the live data display in the GUI window
                
-    # These functions are called by a button to do something with the power nter such as change cal sets for a new band
+    # These functions are called by a button to do something with the power meter such as change cal sets for a new band
 
     def change_scale(self):
         rx = Receiver()
@@ -659,7 +659,7 @@ class App(tk.Frame):
     def comm(self):
         global comms
         if comms == True:
-            # Closing comms   - do nto call this if they are already off!
+            # Closing comms   - do not call this if they are already off!
             comms = False
             self.QUIT.configure(text = format(" Off "))
             self.QUIT.configure(fg='black', bg="light grey")            
@@ -703,7 +703,7 @@ def main():
     global comms
    
     app = App()    
-    app.master.title(myTitle)           # tite can be edited in string constant at top of this file
+    app.master.title(myTitle)           # title can be edited in string constant at top of this file
     app.master.geometry('720x49')
     comms = False       #   currently comms are off at startup now.  
                         #   If you set to true now that imolies the comms are already on and app.comm will then try to toggle and close alrewady closed ports.
@@ -711,7 +711,7 @@ def main():
     app.mainloop()
 
 if __name__ == '__main__':
-    # Collect serial lport COMX from command line or terminal input
+    # Collect serial port COMX from command line or terminal input
     print("Arguments List: %s" % str(sys.argv))    # accept comm port via cmd line
 
     if len(sys.argv) > 1:
@@ -719,7 +719,7 @@ if __name__ == '__main__':
         print(sys.argv[1])
     else:
         port_name = input("Enter a port name: ")  # Python > 2.7
-        #port_name = "COM6"   #uncomment and set this for rapid testing onm a known port]
+        #port_name = "COM6"   #uncomment and set this for rapid testing on a known port]
 
     ser = serial.Serial(
         port=port_name,
